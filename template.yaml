@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  user-sam-app
+
+  A sample user api
+
+Globals:
+  Function:
+    Runtime: python3.9
+    Timeout: 3
+    Handler: app.handler
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref UserTable
+
+Resources:
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create_user/
+      Events:
+        AccountsAPI:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: post
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref UserTable
+  
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_user/  
+      Events:
+        AccountsAPI:
+          Type: Api 
+          Properties:
+            Path: /users/{id}
+            Method: get
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref UserTable
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: UserTable 
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+Outputs:  
+  UserAPI:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users/"
+  
+  CreateUserFunction:
+    Description: "Create User Lambda Function ARN"
+    Value: !GetAtt CreateUserFunction.Arn
+
+  CreateUserFunctionIamRole:
+    Description: "Implicit IAM Role created for Create User function"
+    Value: !GetAtt CreateUserFunctionRole.Arn
+
+  GetUserFunction:
+    Description: "Get User Lambda Function ARN"
+    Value: !GetAtt GetUserFunction.Arn
+
+  GetUserFunctionIamRole:
+    Description: "Implicit IAM Role created for the Get User function"
+    Value: !GetAtt GetUserFunctionRole.Arn
+
+  UserTable:
+    Value: !Ref UserTable
+    Description: DynamoDb Table to store users
+
+
+
