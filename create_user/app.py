@@ -23,7 +23,7 @@ def handler(event, _):
 
   response = {
       'statusCode': 200,
-      'body': json.dumps(data),
+      'body': json.dumps({"id": body['id'], "name":body['name']}),
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'

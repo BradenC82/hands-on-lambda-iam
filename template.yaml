@@ -48,16 +48,14 @@ Resources:
   UserTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: UserTable 
+      TableName: UserTable
+      BillingMode: PAY_PER_REQUEST 
       AttributeDefinitions: 
         - AttributeName: id
           AttributeType: S
       KeySchema: 
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
 
 Outputs:  
   UserAPI:
@@ -83,6 +81,3 @@ Outputs:
   UserTable:
     Value: !Ref UserTable
     Description: DynamoDb Table to store users
-
-
-

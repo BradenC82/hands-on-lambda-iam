@@ -17,7 +17,7 @@ def handler(event, _):
 
   response = {
       'statusCode': 200,
-      'body': json.dumps(data),
+      'body': json.dumps(data['Item']),
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
